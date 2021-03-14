@@ -1,0 +1,62 @@
+{% extends 'courses/main-layout.html' %}
+
+{% block main_section %}
+<div class="main-block">
+    <div class="one-course">
+        <a href="{{ course.get_absolute_url }}" class="btn btn-outline-success">Назад</a>
+        <div class="card one">
+            {% if object.img %}
+            <img src="{{ object.img.url }}" class="card-img-top" alt="{{ object.title }}">
+            {% else %}
+            <img src="/pictures/default.jpg" class="card-img-top" alt="{{ object.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h3 class="card-text">{{ object.title }}</h3>
+                <h3>{{ object.comment.text_comment }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="aside-course">
+        <h3>Видео урок - {{ title }}</h3>
+        <p>{{ desc }}</p>
+        {% if object.free == True %}
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video }}" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+        {% elif user.is_authenticated == False %}
+        <p><a href="{% url 'reg' %}">Зарегистрируйтесь</a> на сайте и купите подписку, чтобы посмотреть этот курс</p>
+        {% elif user.profile.account_type == 'Бесплатный пакет' %}
+        <p>Необходимо купить <a href="{% url 'tarrifs' %}">подписку</a> на сайте, чтобы посмотреть этот курс</p>
+        {% else %}
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video }}" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+        {% endif %}
+
+
+    </div>
+
+</div>
+<div class="container">
+    <hr>
+    <div class="col">
+        {% if user.is_authenticated %}
+        <form action="" method="post">
+            {% csrf_token %}
+            <h3>Комментарии</h3>
+            {{ commForm }}
+            <button type="submit" class="btn btn-danger mt-2">Добавить</button>
+        </form>
+        {% endif %}
+        <h3 class="mt-4"><b>Вывод всех комментариев</b></h3>
+
+        {% for comment in comments %}
+        <div class="alert alert-warning mt-2">
+            <p><b>Текст сообщения:</b></p>
+            <p>{{ comment.text_comment }}</p>
+            <p><b>Автор: </b>{{ comment.author }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
